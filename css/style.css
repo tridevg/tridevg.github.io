@@ -261,3 +261,72 @@ body.boot-active{overflow:hidden;}
   font-size:12.5px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;
 }
 .boot-skip:hover{color:#5eead4;}
+
+/* INTRO CTA / BUTTONS */
+.intro-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px;}
+.btn{
+  font-family:var(--mono);font-size:13px;font-weight:600;
+  padding:11px 18px;border-radius:8px;border:1px solid var(--border);
+  cursor:pointer;transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn .prompt{color:inherit;opacity:.7;}
+.btn-primary{background:var(--text);color:var(--bg);border-color:var(--text);}
+.btn-primary .prompt{color:var(--accent-soft);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 28px -14px rgba(0,0,0,.35);}
+.btn-ghost{background:var(--panel);color:var(--text);}
+.btn-ghost:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 14px 28px -16px rgba(91,91,245,.25);}
+
+/* TERMINAL EASTER EGG */
+.term-fab{
+  position:fixed;left:22px;bottom:22px;z-index:60;
+  width:44px;height:44px;border-radius:50%;
+  background:var(--text);color:var(--bg);border:none;
+  font-family:var(--mono);font-size:13px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 10px 26px rgba(0,0,0,.18);
+  transition:transform .15s ease, background .15s ease;
+}
+.term-fab:hover{transform:translateY(-2px);background:var(--accent);}
+.term-overlay{
+  position:fixed;inset:0;z-index:110;
+  background:rgba(15,17,21,.6);
+  display:flex;align-items:center;justify-content:center;padding:24px;
+  opacity:1;visibility:visible;transition:opacity .25s ease, visibility .25s ease;
+}
+.term-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+.term-panel{width:100%;max-width:600px;position:relative;}
+.term-close{
+  margin-left:auto;background:none;border:none;color:#6b7178;
+  cursor:pointer;font-size:13px;padding:4px 8px;
+}
+.term-close:hover{color:#e5e7eb;}
+.term-body{
+  max-height:340px;overflow-y:auto;font-size:13px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.term-body p{color:#c7cbd1;}
+.term-body p.dim{color:#8a8f98;}
+.term-body p.term-echo{color:#5eead4;}
+.term-body p.term-err{color:#f38ba8;}
+.term-input-row{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 24px;border-top:1px solid #262a31;
+}
+.term-input{
+  flex:1;background:none;border:none;outline:none;
+  color:#e5e7eb;font-family:var(--mono);font-size:13.5px;
+}
+
+/* TOAST */
+.toast{
+  position:fixed;left:50%;bottom:80px;z-index:120;
+  transform:translate(-50%, 12px);
+  background:var(--text);color:var(--bg);
+  font-size:13px;font-family:var(--mono);
+  padding:10px 18px;border-radius:8px;
+  opacity:0;pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+  box-shadow:0 14px 30px rgba(0,0,0,.25);
+}
+.toast.visible{opacity:1;transform:translate(-50%, 0);}

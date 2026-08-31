@@ -41,6 +41,7 @@
       <a href="#experience">Experience</a>
       <a href="#skills">Skills</a>
       <a href="#projects">Projects</a>
+      <a href="assets/tridev-guha-resume.pdf" download="Tridev-Guha-Resume.pdf">Resume</a>
       <a href="#contact" class="nav-cta">Contact</a>
     </nav>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
@@ -53,6 +54,14 @@
     <h1 class="intro-name"><span id="typedName"></span><span class="blink">_</span></h1>
     <p class="intro-role">DEVOPS ENGINEER · PACEWISDOM SOLUTIONS</p>
     <p class="intro-tagline">Cloud infrastructure, CI/CD automation, DevSecOps, observability, and GenAI-assisted delivery workflows.</p>
+    <div class="intro-cta">
+      <a class="btn btn-primary" href="assets/tridev-guha-resume.pdf" download="Tridev-Guha-Resume.pdf">
+        <span class="prompt">$</span> cat resume.pdf &gt; download
+      </a>
+      <button class="btn btn-ghost" id="termOpen" type="button">
+        <span class="prompt">$</span> ./open-terminal.sh
+      </button>
+    </div>
   </section>
 
   <section class="section" id="about">
@@ -281,6 +290,27 @@
 </footer>
 
 <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">↑</button>
+
+<button class="term-fab" id="termFab" aria-label="Open interactive terminal" title="Open terminal">&gt;_</button>
+
+<div class="term-overlay hidden" id="termOverlay">
+  <div class="boot-terminal term-panel">
+    <div class="terminal-bar">
+      <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+      <span class="terminal-title">tridev@devops: ~</span>
+      <button class="term-close" id="termClose" aria-label="Close terminal">✕</button>
+    </div>
+    <div class="terminal-body term-body" id="termOutput">
+      <p class="dim">tridev-shell v1.0.0 — type <span class="prompt">help</span> to get started.</p>
+    </div>
+    <div class="term-input-row">
+      <span class="prompt">$</span>
+      <input type="text" id="termInput" class="term-input" autocomplete="off" spellcheck="false" aria-label="Terminal command input">
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script src="js/script.js"></script>
 </body>

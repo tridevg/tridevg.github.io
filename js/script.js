@@ -31,13 +31,34 @@ document.querySelectorAll('.icon-link[data-href]').forEach(link => {
   link.rel = 'noopener';
 });
 
+// Toast helper
+const toastEl = document.getElementById('toast');
+let toastTimer;
+function showToast(message){
+  toastEl.textContent = message;
+  toastEl.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('visible'), 2200);
+}
+
 // Assemble mailto from split, base64-encoded parts and set it as a real
 // href (not decoded until runtime, so it never appears in page source).
+// Clicking copies the address to the clipboard instead of launching a mail
+// client, which is what most visitors actually want.
 const emailLink = document.getElementById('emailLink');
+let emailAddress = '';
 if (emailLink) {
   const user = atob(emailLink.dataset.user);
   const domain = atob(emailLink.dataset.domain);
-  emailLink.href = `mailto:${user}@${domain}`;
+  emailAddress = `${user}@${domain}`;
+  emailLink.href = `mailto:${emailAddress}`;
+  emailLink.title = 'Click to copy email';
+  emailLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigator.clipboard.writeText(emailAddress)
+      .then(() => showToast(`Copied ${emailAddress} to clipboard`))
+      .catch(() => { window.location.href = emailLink.href; });
+  });
 }
 
 // Scroll-triggered reveal animations
@@ -127,4 +148,113 @@ scrollTopBtn.addEventListener('click', () => {
 
   runBtn.addEventListener('click', run);
   skipBtn.addEventListener('click', dismiss);
+})();
+
+// Interactive terminal easter egg
+(function terminal(){
+  const fab = document.getElementById('termFab');
+  const overlay = document.getElementById('termOverlay');
+  const closeBtn = document.getElementById('termClose');
+  const output = document.getElementById('termOutput');
+  const input = document.getElementById('termInput');
+
+  function print(text, cls){
+    const p = document.createElement('p');
+    p.textContent = text;
+    if (cls) p.classList.add(cls);
+    output.appendChild(p);
+    output.scrollTop = output.scrollHeight;
+  }
+
+  const commands = {
+    help(){
+      print('available commands:');
+      print('  whoami       — who is this');
+      print('  skills       — core skill categories');
+      print('  experience   — career summary');
+      print('  certs        — certifications');
+      print('  contact      — how to reach me');
+      print('  resume       — download resume.pdf');
+      print('  sudo hire-me — try it');
+      print('  clear        — clear the screen');
+      print('  exit         — close this terminal');
+    },
+    whoami(){
+      print('tridev guha — devops engineer @ pacewisdom solutions');
+      print('cloud · ci/cd · devsecops · observability · genai workflows');
+    },
+    skills(){
+      print('~/cloud, ~/containers-cicd, ~/iac-devsecops, ~/observability-ai');
+      print('see the Skills section for the full breakdown.');
+    },
+    experience(){
+      print('devops engineer @ pace wisdom solutions — dec 2025 – present');
+      print('senior security engineer @ qualys — mar 2018 – sept 2025');
+      print('7+ years total across cloud ops, ci/cd, and security.');
+    },
+    certs(){
+      print('aws certified — generative ai foundations');
+      print('claude certified architect — foundation');
+    },
+    contact(){
+      print(`email:    ${emailAddress}`);
+      print('github:   linked in the Contact section');
+      print('linkedin: linked in the Contact section');
+    },
+    resume(){
+      print('downloading resume.pdf...', 'term-echo');
+      const a = document.createElement('a');
+      a.href = 'assets/tridev-guha-resume.pdf';
+      a.download = 'Tridev-Guha-Resume.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    },
+    clear(){
+      output.innerHTML = '';
+    },
+    exit(){
+      close();
+    },
+    close(){
+      close();
+    },
+  };
+  commands['sudo hire-me'] = function(){
+    print('permission granted.', 'term-echo');
+    print('scrolling to contact...', 'term-echo');
+    setTimeout(() => {
+      close();
+      document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+    }, 700);
+  };
+
+  function open(){
+    overlay.classList.remove('hidden');
+    setTimeout(() => input.focus(), 50);
+  }
+  function close(){
+    overlay.classList.add('hidden');
+  }
+
+  fab.addEventListener('click', open);
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !overlay.classList.contains('hidden')) close();
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    const raw = input.value.trim();
+    input.value = '';
+    if (!raw) return;
+    print(`$ ${raw}`, 'term-echo');
+    const handler = commands[raw.toLowerCase()];
+    if (handler) {
+      handler();
+    } else {
+      print(`command not found: ${raw} — try 'help'`, 'term-err');
+    }
+  });
 })();
