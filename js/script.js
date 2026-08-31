@@ -99,11 +99,13 @@ if (statusUpdated) {
   statusUpdated.textContent = `checked ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 }
 
-// Architecture diagram — click a node to see what that step does
+// Architecture diagram — auto-plays through each step, or click a node to
+// jump straight to it (which pauses the auto-play).
 (function archDiagram(){
-  const nodes = document.querySelectorAll('.arch-node');
+  const section = document.getElementById('architecture');
+  const nodes = Array.from(document.querySelectorAll('.arch-node'));
   const detail = document.getElementById('archDetail');
-  if (!nodes.length || !detail) return;
+  if (!nodes.length || !detail || !section) return;
 
   const descriptions = {
     push: 'A commit lands on the `dev` branch and gets pushed to GitHub.',
@@ -112,14 +114,48 @@ if (statusUpdated) {
     you: 'Your browser renders it — HTML, CSS, and a bit of vanilla JS, no framework.',
   };
 
-  nodes.forEach(node => {
+  let index = 0;
+  let timer = null;
+  const STEP_MS = 2600;
+
+  function showStep(i){
+    index = i;
+    const node = nodes[i];
+    nodes.forEach(n => n.classList.remove('active'));
+    node.classList.add('active');
+    detail.innerHTML = `<p><span class="prompt">$</span> ${descriptions[node.dataset.node]}</p>`;
+  }
+
+  function startAutoplay(){
+    if (timer) return;
+    timer = setInterval(() => {
+      showStep((index + 1) % nodes.length);
+    }, STEP_MS);
+  }
+
+  function stopAutoplay(){
+    clearInterval(timer);
+    timer = null;
+  }
+
+  nodes.forEach((node, i) => {
     node.addEventListener('click', () => {
-      nodes.forEach(n => n.classList.remove('active'));
-      node.classList.add('active');
-      const key = node.dataset.node;
-      detail.innerHTML = `<p><span class="prompt">$</span> ${descriptions[key]}</p>`;
+      stopAutoplay();
+      showStep(i);
     });
   });
+
+  // Start the auto-play once the diagram actually scrolls into view.
+  const playObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        showStep(0);
+        startAutoplay();
+        playObserver.disconnect();
+      }
+    });
+  }, { threshold: 0.4 });
+  playObserver.observe(section);
 })();
 
 // Scroll-triggered reveal animations
