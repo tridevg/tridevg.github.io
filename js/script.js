@@ -97,8 +97,9 @@ scrollTopBtn.addEventListener('click', () => {
     { text: '  ✓ layer 8b09c — pull complete', ok: false },
     { text: '[+] network portfolio_default — created', ok: false },
     { text: '[+] container portfolio — started', ok: true },
+    { text: '→ app listening on :8000', ok: false },
     { text: '[+] nginx reverse proxy — configured', ok: false },
-    { text: '→ serving on :443 (nginx → :8080)', ok: false },
+    { text: '→ nginx :443 → app:8000', ok: false },
     { text: '✓ ready', ok: true },
   ];
 
