@@ -79,3 +79,52 @@ window.addEventListener('scroll', () => {
 scrollTopBtn.addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+// Boot-gate splash screen
+(function boot(){
+  const overlay = document.getElementById('bootOverlay');
+  const runBtn = document.getElementById('bootRun');
+  const skipBtn = document.getElementById('bootSkip');
+  const log = document.getElementById('bootLog');
+
+  if (sessionStorage.getItem('booted') === '1') {
+    overlay.classList.add('hidden');
+    return;
+  }
+  document.body.classList.add('boot-active');
+
+  const lines = [
+    { text: '[+] pulling tridevguha/portfolio:latest', ok: false },
+    { text: '  ✓ layer 4f21a — pull complete', ok: false },
+    { text: '  ✓ layer 8b09c — pull complete', ok: false },
+    { text: '[+] network portfolio_default — created', ok: false },
+    { text: '[+] container portfolio — started', ok: true },
+    { text: '→ serving on :8080', ok: false },
+    { text: '✓ ready', ok: true },
+  ];
+
+  function dismiss(){
+    sessionStorage.setItem('booted', '1');
+    overlay.classList.add('hidden');
+    document.body.classList.remove('boot-active');
+    setTimeout(() => overlay.remove(), 600);
+  }
+
+  function run(){
+    runBtn.disabled = true;
+    let i = 0;
+    function next(){
+      if (i >= lines.length) { setTimeout(dismiss, 500); return; }
+      const p = document.createElement('p');
+      p.textContent = lines[i].text;
+      if (lines[i].ok) p.classList.add('ok');
+      log.appendChild(p);
+      i++;
+      setTimeout(next, 220);
+    }
+    next();
+  }
+
+  runBtn.addEventListener('click', run);
+  skipBtn.addEventListener('click', dismiss);
+})();

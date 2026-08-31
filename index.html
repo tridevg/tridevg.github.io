@@ -13,6 +13,26 @@
 </head>
 <body>
 
+<div class="boot-overlay" id="bootOverlay">
+  <p class="boot-label"><span class="boot-dot"></span>RUN TO CONTINUE</p>
+  <h1 class="boot-heading">tridev@portfolio</h1>
+  <div class="terminal boot-terminal">
+    <div class="terminal-bar">
+      <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+      <span class="terminal-title">tridev@devops: ~</span>
+    </div>
+    <div class="terminal-body">
+      <p class="boot-line dim"># this site ships as a container.</p>
+      <p class="boot-line dim"># boot it to continue:</p>
+      <button class="boot-run" id="bootRun" type="button">
+        <span class="prompt">$</span> docker compose up portfolio
+      </button>
+      <div class="boot-log" id="bootLog"></div>
+    </div>
+  </div>
+  <button class="boot-skip" id="bootSkip" type="button">› skip and view portfolio</button>
+</div>
+
 <header class="nav">
   <div class="nav-inner">
     <a href="#top" class="nav-brand">tridev<span class="cursor-dot">@</span>guha</a>
@@ -53,8 +73,28 @@
     <h2 class="section-title"><span class="section-num">01</span> about</h2>
     <div class="about-grid">
       <div class="avatar-wrap reveal">
-        <div class="avatar-placeholder" aria-label="Profile photo placeholder">
-          <span>TG</span>
+        <div class="avatar-placeholder" aria-label="Placeholder photo — a cartoon Persian cat, until a real profile photo is added">
+          <svg viewBox="0 0 120 120" width="100" height="100" aria-hidden="true">
+            <ellipse cx="60" cy="70" rx="42" ry="34" fill="#04140c" opacity=".18"/>
+            <path d="M28 55 Q20 20 42 34 Q52 20 60 34 Q68 20 78 34 Q100 20 92 55 Z" fill="#04140c" opacity=".9"/>
+            <ellipse cx="60" cy="68" rx="38" ry="32" fill="#f4efe6"/>
+            <path d="M30 48 L20 24 L44 40 Z" fill="#f4efe6"/>
+            <path d="M90 48 L100 24 L76 40 Z" fill="#f4efe6"/>
+            <path d="M30 48 L24 32 L40 42 Z" fill="#f2a7b8"/>
+            <path d="M90 48 L96 32 L80 42 Z" fill="#f2a7b8"/>
+            <circle cx="44" cy="66" r="7" fill="#04140c"/>
+            <circle cx="76" cy="66" r="7" fill="#04140c"/>
+            <circle cx="46" cy="64" r="2" fill="#fff"/>
+            <circle cx="78" cy="64" r="2" fill="#fff"/>
+            <path d="M56 78 Q60 82 64 78 Q60 84 56 78Z" fill="#e88ba0"/>
+            <path d="M60 79 L60 84" stroke="#04140c" stroke-width="1.4"/>
+            <path d="M60 84 Q52 90 46 88" stroke="#04140c" stroke-width="1.4" fill="none"/>
+            <path d="M60 84 Q68 90 74 88" stroke="#04140c" stroke-width="1.4" fill="none"/>
+            <g stroke="#04140c" stroke-width="1.2" opacity=".7">
+              <path d="M20 62 L38 65"/><path d="M20 70 L38 70"/><path d="M20 78 L38 75"/>
+              <path d="M100 62 L82 65"/><path d="M100 70 L82 70"/><path d="M100 78 L82 75"/>
+            </g>
+          </svg>
         </div>
       </div>
       <div class="about-copy reveal">
