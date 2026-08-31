@@ -22,24 +22,22 @@ navLinks.querySelectorAll('a').forEach(a =>
 );
 
 // Decode obfuscated GitHub / LinkedIn hrefs so the URL never appears in the
-// rendered HTML source as plain text.
+// rendered HTML source as plain text. Set as real attributes (rather than
+// intercepting the click with window.open) so the browser handles the
+// navigation natively instead of it being treated as a popup.
 document.querySelectorAll('.icon-link[data-href]').forEach(link => {
-  const url = atob(link.dataset.href);
-  link.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.open(url, '_blank', 'noopener');
-  });
+  link.href = atob(link.dataset.href);
+  link.target = '_blank';
+  link.rel = 'noopener';
 });
 
-// Assemble mailto from split, base64-encoded parts.
+// Assemble mailto from split, base64-encoded parts and set it as a real
+// href (not decoded until runtime, so it never appears in page source).
 const emailLink = document.getElementById('emailLink');
 if (emailLink) {
   const user = atob(emailLink.dataset.user);
   const domain = atob(emailLink.dataset.domain);
-  emailLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.location.href = `mailto:${user}@${domain}`;
-  });
+  emailLink.href = `mailto:${user}@${domain}`;
 }
 
 // Scroll-triggered reveal animations
