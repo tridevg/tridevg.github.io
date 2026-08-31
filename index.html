@@ -40,6 +40,7 @@
       <a href="#about">About</a>
       <a href="#experience">Experience</a>
       <a href="#skills">Skills</a>
+      <a href="#architecture">How This Ships</a>
       <a href="#projects">Projects</a>
       <a href="assets/tridev-guha-resume.pdf" download="Tridev-Guha-Resume.pdf">Resume</a>
       <a href="#contact" class="nav-cta">Contact</a>
@@ -61,6 +62,32 @@
       <button class="btn btn-ghost" id="termOpen" type="button">
         <span class="prompt">$</span> ./open-terminal.sh
       </button>
+    </div>
+
+    <div class="status-widget reveal">
+      <div class="status-head">
+        <span class="status-dot-big"></span>
+        <span>All systems operational</span>
+        <span class="status-updated" id="statusUpdated">checked just now</span>
+      </div>
+      <div class="status-rows">
+        <div class="status-row">
+          <span class="status-dot"></span>
+          <span class="status-name">Portfolio Site</span>
+          <span class="status-state">Operational</span>
+        </div>
+        <div class="status-row">
+          <span class="status-dot"></span>
+          <span class="status-name">CI/CD Pipeline</span>
+          <span class="status-state">Operational</span>
+        </div>
+        <div class="status-row">
+          <span class="status-dot"></span>
+          <span class="status-name">Resume Service</span>
+          <span class="status-state">Operational</span>
+        </div>
+      </div>
+      <p class="status-foot">0 incidents in the last 90 days</p>
     </div>
   </section>
 
@@ -258,9 +285,41 @@
     </div>
   </section>
 
+  <section class="section" id="architecture">
+    <span class="section-num">04</span>
+    <h2 class="section-title">How This Ships</h2>
+    <p class="arch-lead reveal">This site is built and deployed the same way I'd ship anything else — click a node to see what it does.</p>
+
+    <div class="arch-diagram reveal">
+      <button class="arch-node" data-node="push">
+        <span class="arch-node-icon">①</span>
+        <span>git push</span>
+      </button>
+      <span class="arch-arrow">→</span>
+      <button class="arch-node" data-node="build">
+        <span class="arch-node-icon">②</span>
+        <span>GitHub Pages build</span>
+      </button>
+      <span class="arch-arrow">→</span>
+      <button class="arch-node" data-node="cdn">
+        <span class="arch-node-icon">③</span>
+        <span>Fastly CDN</span>
+      </button>
+      <span class="arch-arrow">→</span>
+      <button class="arch-node" data-node="you">
+        <span class="arch-node-icon">④</span>
+        <span>your browser</span>
+      </button>
+    </div>
+
+    <div class="arch-detail reveal" id="archDetail">
+      <p><span class="prompt">$</span> click a step above to see what it does.</p>
+    </div>
+  </section>
+
   <section class="section section-alt" id="projects">
     <div>
-      <span class="section-num">04</span>
+      <span class="section-num">05</span>
       <h2 class="section-title">Projects</h2>
       <div class="projects-empty reveal">
         <p><span class="prompt">$</span> ls ./projects</p>
@@ -272,7 +331,7 @@
 </main>
 
 <footer class="contact" id="contact">
-  <span class="section-num">05</span>
+  <span class="section-num">06</span>
   <h2 class="section-title">Contact</h2>
   <p class="contact-lead reveal">Open to conversations on DevOps, cloud, and automation.</p>
   <div class="social-icons reveal">
@@ -286,6 +345,9 @@
       <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M2 4h20a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Zm18.53 2H3.47L12 12.5 20.53 6ZM2 7.24V19h20V7.24l-9.47 7.03a1 1 0 0 1-1.06 0L2 7.24Z"/></svg>
     </a>
   </div>
+  <button class="btn btn-ghost vcard-btn reveal" id="vcardBtn" type="button">
+    <span class="prompt">$</span> curl -o tridev.vcf ./contact-card
+  </button>
   <p class="footer-note">designed &amp; built by tridev guha</p>
 </footer>
 

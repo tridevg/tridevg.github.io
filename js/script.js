@@ -61,6 +61,67 @@ if (emailLink) {
   });
 }
 
+// vCard download — built at click-time from the same decoded contact
+// details used elsewhere, so nothing sensitive sits in the page source.
+const vcardBtn = document.getElementById('vcardBtn');
+if (vcardBtn) {
+  vcardBtn.addEventListener('click', () => {
+    const githubUrl = atob(document.querySelector('.icon-link[aria-label="GitHub"]').dataset.href);
+    const linkedinUrl = atob(document.querySelector('.icon-link[aria-label="LinkedIn"]').dataset.href);
+    const vcard = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      'FN:Tridev Guha',
+      'N:Guha;Tridev;;;',
+      'ORG:Pace Wisdom Solutions',
+      'TITLE:DevOps Engineer',
+      `EMAIL;TYPE=INTERNET:${emailAddress}`,
+      `URL:${githubUrl}`,
+      `URL:${linkedinUrl}`,
+      'END:VCARD',
+    ].join('\r\n');
+    const blob = new Blob([vcard], { type: 'text/vcard' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'tridev-guha.vcf';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('Contact card downloaded');
+  });
+}
+
+// Status widget — cosmetic "last checked" timestamp
+const statusUpdated = document.getElementById('statusUpdated');
+if (statusUpdated) {
+  statusUpdated.textContent = `checked ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+}
+
+// Architecture diagram — click a node to see what that step does
+(function archDiagram(){
+  const nodes = document.querySelectorAll('.arch-node');
+  const detail = document.getElementById('archDetail');
+  if (!nodes.length || !detail) return;
+
+  const descriptions = {
+    push: 'A commit lands on the `dev` branch and gets pushed to GitHub.',
+    build: 'GitHub Pages picks up the push and builds the static site — no server, no containers to manage for the site itself.',
+    cdn: 'The built site is served from Fastly’s edge CDN, so it loads fast from wherever you are.',
+    you: 'Your browser renders it — HTML, CSS, and a bit of vanilla JS, no framework.',
+  };
+
+  nodes.forEach(node => {
+    node.addEventListener('click', () => {
+      nodes.forEach(n => n.classList.remove('active'));
+      node.classList.add('active');
+      const key = node.dataset.node;
+      detail.innerHTML = `<p><span class="prompt">$</span> ${descriptions[key]}</p>`;
+    });
+  });
+})();
+
 // Scroll-triggered reveal animations
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
