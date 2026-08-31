@@ -153,6 +153,7 @@ scrollTopBtn.addEventListener('click', () => {
 // Interactive terminal easter egg
 (function terminal(){
   const fab = document.getElementById('termFab');
+  const heroOpenBtn = document.getElementById('termOpen');
   const overlay = document.getElementById('termOverlay');
   const closeBtn = document.getElementById('termClose');
   const output = document.getElementById('termOutput');
@@ -238,6 +239,7 @@ scrollTopBtn.addEventListener('click', () => {
   }
 
   fab.addEventListener('click', open);
+  if (heroOpenBtn) heroOpenBtn.addEventListener('click', open);
   closeBtn.addEventListener('click', close);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
   document.addEventListener('keydown', (e) => {
