@@ -357,3 +357,261 @@ scrollTopBtn.addEventListener('click', () => {
     }
   });
 })();
+
+// Rule-based Q&A chatbot. No LLM, no API key, no backend — a static site
+// can't safely call an AI API from client-side JS without exposing the
+// key. This scores user input against keyword-based intents instead, with
+// varied phrasing so repeat questions don't feel robotic.
+(function chatbot(){
+  const fab = document.getElementById('chatFab');
+  const panel = document.getElementById('chatPanel');
+  const closeBtn = document.getElementById('chatClose');
+  const messages = document.getElementById('chatMessages');
+  const quickReplies = document.getElementById('chatQuickReplies');
+  const chatInput = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('chatSend');
+  if (!fab || !panel) return;
+
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+  const intents = [
+    {
+      id: 'greeting',
+      keywords: ['hi', 'hello', 'hey', 'yo', 'sup', 'good morning', 'good evening'],
+      responses: [
+        "Hey! I'm a scripted assistant for Tridev's portfolio — ask me about his experience, skills, certs, or how to reach him.",
+        "Hi there! Ask me anything about Tridev's DevOps background — experience, skills, certifications, contact info, all fair game.",
+      ],
+    },
+    {
+      id: 'about',
+      keywords: ['who are you', 'about you', 'tell me about', 'introduce', 'who is tridev', 'what do you do'],
+      responses: [
+        'Tridev Guha is a DevOps Engineer with 7+ years across cloud operations, CI/CD automation, and production support — currently at Pace Wisdom Solutions.',
+        "He's a DevOps engineer focused on cloud infra, automation, and DevSecOps, with a background in security engineering too.",
+      ],
+    },
+    {
+      id: 'experience',
+      keywords: ['experience', 'work history', 'career', 'background', 'years of experience', 'how long', 'how many years'],
+      responses: [
+        '7+ years total: DevOps Engineer at Pace Wisdom Solutions (Dec 2025–present), and before that Senior Security Engineer at Qualys (Mar 2018–Sept 2025). Full details in the Experience section.',
+      ],
+    },
+    {
+      id: 'current_role',
+      keywords: ['current role', 'current job', 'where do you work', 'pace wisdom', 'working now', 'current company', 'what are you doing now'],
+      responses: [
+        "Currently a DevOps Engineer at Pace Wisdom Solutions — owns delivery across cloud infra, CI/CD pipelines, containerized workloads, and observability tooling.",
+      ],
+    },
+    {
+      id: 'previous_role',
+      keywords: ['qualys', 'previous job', 'past experience', 'security engineer', 'before this'],
+      responses: [
+        'Before this, 7+ years at Qualys as a Senior Security Engineer — CI/CD for vulnerability management releases, infra automation, and incident response.',
+      ],
+    },
+    {
+      id: 'skills',
+      keywords: ['skills', 'tech stack', 'technologies', 'what do you know', 'expertise', 'skill set', 'stack'],
+      responses: [
+        'Cloud (AWS), containers & CI/CD (Docker, Kubernetes, GitLab CI/CD, GitHub Actions), IaC & DevSecOps (Terraform, Ansible, SonarQube, Trivy), and observability & AI (Grafana, Bedrock, Claude). See the Skills section for the full breakdown.',
+      ],
+    },
+    {
+      id: 'cloud',
+      keywords: ['aws', 'cloud', 'ec2', 's3', 'vpc', 'route 53', 'lambda'],
+      responses: [
+        'Hands-on with AWS — EC2, VPC, S3, CloudWatch, CloudFront, Route 53, Lambda, EventBridge, SES, SNS, IAM.',
+      ],
+    },
+    {
+      id: 'containers',
+      keywords: ['docker', 'kubernetes', 'k8s', 'container'],
+      responses: [
+        'Docker and Kubernetes for containerized workloads, with a focus on rollout stability and environment consistency.',
+      ],
+    },
+    {
+      id: 'cicd',
+      keywords: ['ci/cd', 'cicd', 'pipeline', 'jenkins', 'github actions', 'gitlab'],
+      responses: [
+        'GitLab CI/CD, GitHub Actions, and Jenkins — pipeline design, hardening, and release automation.',
+      ],
+    },
+    {
+      id: 'iac',
+      keywords: ['terraform', 'ansible', 'infrastructure as code', 'iac'],
+      responses: [
+        'Terraform and Ansible for infrastructure provisioning and configuration management.',
+      ],
+    },
+    {
+      id: 'security',
+      keywords: ['security', 'devsecops', 'sonarqube', 'trivy', 'vulnerab', 'firewall', 'ids/ips'],
+      responses: [
+        'DevSecOps: SonarQube, Trivy, container/secrets scanning, and pipeline hardening — plus a background in security engineering (firewalls, IDS/IPS, vulnerability management at Qualys).',
+      ],
+    },
+    {
+      id: 'ai',
+      keywords: ['genai', 'claude', 'bedrock', 'prompt engineering', 'generative ai', 'llm'],
+      responses: [
+        'AWS GenAI Foundations, Amazon Bedrock, and Claude — prompt engineering and AI workflow automation applied to DevOps delivery.',
+      ],
+    },
+    {
+      id: 'certifications',
+      keywords: ['certification', 'certified', 'certificate', 'badge', 'certs'],
+      responses: [
+        'Two: AWS Certified — Generative AI Foundations, and Claude Certified Architect — Foundation. See the badges in the Skills & Certifications section.',
+      ],
+    },
+    {
+      id: 'education',
+      keywords: ['education', 'degree', 'college', 'university', 'study', 'studied', 'academic'],
+      responses: [
+        "BTech in Computer Science & Engineering (Techno India University), plus a Post Graduate Diploma in IT Infrastructure Systems from CDAC Pune.",
+      ],
+    },
+    {
+      id: 'location',
+      keywords: ['location', 'based', 'where are you', 'live', 'city', 'country'],
+      responses: [
+        'Based in Mangalore, India.',
+      ],
+    },
+    {
+      id: 'languages',
+      keywords: ['language', 'speak', 'fluent'],
+      responses: [
+        'English (fluent), Hindi, and Bengali.',
+      ],
+    },
+    {
+      id: 'projects',
+      keywords: ['project', 'portfolio project', 'built anything', 'side project'],
+      responses: [
+        "The Projects section is empty for now — coming soon. This chatbot and the rest of this site are themselves a decent demo of what he builds, though!",
+      ],
+    },
+    {
+      id: 'contact',
+      keywords: ['contact', 'email', 'reach', 'get in touch', 'hire', 'linkedin', 'github profile', 'talk to'],
+      responses: [
+        "Best way is the Contact section — email, GitHub, and LinkedIn icons are all there, plus a downloadable contact card.",
+      ],
+      action: 'contact',
+    },
+    {
+      id: 'resume',
+      keywords: ['resume', 'cv', 'download resume'],
+      responses: [
+        "You can grab the resume PDF directly — I'll start the download for you.",
+      ],
+      action: 'resume',
+    },
+    {
+      id: 'availability',
+      keywords: ['available', 'open to work', 'hiring', 'freelance', 'looking for a job', 'looking for job'],
+      responses: [
+        "For opportunities or collaboration, the best move is reaching out directly via the Contact section — email or LinkedIn.",
+      ],
+    },
+    {
+      id: 'is_bot',
+      keywords: ['are you real', 'are you ai', 'are you a bot', 'real person', 'chatgpt', 'gpt', 'are you human', 'is this ai'],
+      responses: [
+        "I'm a simple rule-based assistant — keyword matching, no LLM behind me. Honest answer, no smoke and mirrors. But I do know a lot about Tridev!",
+      ],
+    },
+    {
+      id: 'thanks',
+      keywords: ['thanks', 'thank you', 'appreciate', 'cheers'],
+      responses: ['Anytime! Ask away if you\'ve got more questions.', "You're welcome — happy to help."],
+    },
+    {
+      id: 'bye',
+      keywords: ['bye', 'goodbye', 'see you', 'later', 'gtg'],
+      responses: ['Take care! Feel free to reach out via the Contact section anytime.', 'See you around!'],
+    },
+  ];
+
+  function matchIntent(text){
+    const norm = text.toLowerCase();
+    let best = null;
+    let bestScore = 0;
+    intents.forEach(intent => {
+      let score = 0;
+      intent.keywords.forEach(kw => { if (norm.includes(kw)) score += kw.split(' ').length; });
+      if (score > bestScore) { bestScore = score; best = intent; }
+    });
+    return bestScore > 0 ? best : null;
+  }
+
+  function addMessage(text, who){
+    const div = document.createElement('div');
+    div.className = `chat-msg ${who}`;
+    div.textContent = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+    return div;
+  }
+
+  function respondTo(text){
+    addMessage(text, 'user');
+    const typing = document.createElement('div');
+    typing.className = 'chat-msg bot typing';
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    messages.appendChild(typing);
+    messages.scrollTop = messages.scrollHeight;
+
+    setTimeout(() => {
+      typing.remove();
+      const intent = matchIntent(text);
+      if (!intent) {
+        addMessage("Not sure I caught that — try asking about experience, skills, certifications, projects, or how to get in touch.", 'bot');
+        return;
+      }
+      addMessage(pick(intent.responses), 'bot');
+      if (intent.action === 'resume') {
+        const a = document.createElement('a');
+        a.href = 'assets/tridev-guha-resume.pdf';
+        a.download = 'Tridev-Guha-Resume.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } else if (intent.action === 'contact') {
+        setTimeout(() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' }), 300);
+      }
+    }, 500 + Math.random() * 400);
+  }
+
+  function open(){
+    panel.classList.remove('hidden');
+    if (!messages.children.length) {
+      addMessage("Hi! Ask me anything about Tridev — experience, skills, certifications, or how to get in touch.", 'bot');
+    }
+    setTimeout(() => chatInput.focus(), 50);
+  }
+  function close(){
+    panel.classList.add('hidden');
+  }
+
+  fab.addEventListener('click', open);
+  closeBtn.addEventListener('click', close);
+
+  function send(){
+    const text = chatInput.value.trim();
+    if (!text) return;
+    chatInput.value = '';
+    respondTo(text);
+  }
+  sendBtn.addEventListener('click', send);
+  chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
+
+  quickReplies.querySelectorAll('.chat-chip').forEach(chip => {
+    chip.addEventListener('click', () => respondTo(chip.dataset.q));
+  });
+})();
