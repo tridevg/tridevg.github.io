@@ -74,7 +74,7 @@ if (vcardBtn) {
       'FN:Tridev Guha',
       'N:Guha;Tridev;;;',
       'ORG:Pace Wisdom Solutions',
-      'TITLE:DevOps Engineer',
+      'TITLE:DevSecOps & Cloud Infrastructure Engineer',
       `EMAIL;TYPE=INTERNET:${emailAddress}`,
       `URL:${githubUrl}`,
       `URL:${linkedinUrl}`,
@@ -272,14 +272,15 @@ scrollTopBtn.addEventListener('click', () => {
       print('  experience   — career summary');
       print('  certs        — certifications');
       print('  contact      — how to reach me');
-      print('  resume       — download resume.pdf');
+      print('  resume       — download TridevGuha-Resume.pdf');
+      print('  coverletter  — download coverletter-tridevguha.pdf');
       print('  sudo hire-me — try it');
       print('  clear        — clear the screen');
       print('  exit         — close this terminal');
     },
     whoami(){
-      print('tridev guha — devops engineer @ pacewisdom solutions');
-      print('cloud · ci/cd · devsecops · observability · genai workflows');
+      print('tridev guha — devsecops & cloud infrastructure engineer @ pace wisdom solutions');
+      print('aws · containers · ci/cd · devsecops · observability · genai workflows');
     },
     skills(){
       print('~/cloud, ~/containers-cicd, ~/iac-devsecops, ~/observability-ai');
@@ -287,12 +288,14 @@ scrollTopBtn.addEventListener('click', () => {
     },
     experience(){
       print('devops engineer @ pace wisdom solutions — dec 2025 – present');
-      print('senior security engineer @ qualys — mar 2018 – sept 2025');
-      print('7+ years total across cloud ops, ci/cd, and security.');
+      print('devops engineer @ qualys — mar 2022 – sept 2025');
+      print('senior security engineer @ qualys — mar 2018 – mar 2022');
+      print('8.8+ years total across cloud, devsecops, and security engineering.');
     },
     certs(){
-      print('aws certified — generative ai foundations');
-      print('claude certified architect — foundation');
+      print('aws certified ai practitioner — june 2026');
+      print('claude certified architect foundations — applied (exam pending)');
+      print('red hat certified system administrator (rhcsa) — feb 2020');
     },
     contact(){
       print(`email:    ${emailAddress}`);
@@ -300,10 +303,19 @@ scrollTopBtn.addEventListener('click', () => {
       print('linkedin: linked in the Contact section');
     },
     resume(){
-      print('downloading resume.pdf...', 'term-echo');
+      print('downloading TridevGuha-Resume.pdf...', 'term-echo');
       const a = document.createElement('a');
-      a.href = 'assets/tridev-guha-resume.pdf';
-      a.download = 'Tridev-Guha-Resume.pdf';
+      a.href = 'assets/TridevGuha-Resume.pdf';
+      a.download = 'TridevGuha-Resume.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    },
+    coverletter(){
+      print('downloading coverletter-tridevguha.pdf...', 'term-echo');
+      const a = document.createElement('a');
+      a.href = 'assets/coverletter-tridevguha.pdf';
+      a.download = 'coverletter-tridevguha.pdf';
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -374,150 +386,226 @@ scrollTopBtn.addEventListener('click', () => {
 
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
+  // Links shown inside chat replies. href may be a function so that social
+  // URLs are read from the (base64-encoded) icon links at runtime instead of
+  // being duplicated as plain text in this file.
+  const socialHref = (label) => {
+    const el = document.querySelector(`.icon-link[aria-label="${label}"]`);
+    return el && el.dataset.href ? atob(el.dataset.href) : '';
+  };
+  const LINKS = {
+    resume: { label: 'Download resume (PDF)', href: 'assets/TridevGuha-Resume.pdf', download: 'TridevGuha-Resume.pdf' },
+    coverletter: { label: 'Download cover letter (PDF)', href: 'assets/coverletter-tridevguha.pdf', download: 'coverletter-tridevguha.pdf' },
+    linkedin: { label: 'LinkedIn profile', href: () => socialHref('LinkedIn'), external: true },
+    github: { label: 'GitHub profile', href: () => socialHref('GitHub'), external: true },
+    pacewisdom: { label: 'Pace Wisdom Solutions — pacewisdom.in', href: 'https://pacewisdom.in', external: true },
+    cve: { label: 'CVE Intelligence Platform — cve.pacewisdom.in', href: 'https://cve.pacewisdom.in', external: true },
+  };
+
+  const FALLBACK_TOPICS = 'experience (current and past roles), skills, cloud, containers, CI/CD, IaC, DevSecOps, observability, AI/GenAI, certifications, education, projects, location, languages, availability, contact, the resume, the cover letter, LinkedIn, GitHub, and Pace Wisdom';
+
   const intents = [
     {
       id: 'greeting',
       keywords: ['hi', 'hello', 'hey', 'yo', 'sup', 'good morning', 'good evening'],
       responses: [
-        "Hey! I'm a scripted assistant for Tridev's portfolio — ask me about his experience, skills, certs, or how to reach him.",
-        "Hi there! Ask me anything about Tridev's DevOps background — experience, skills, certifications, contact info, all fair game.",
+        "Hey! I'm a scripted assistant for Tridev's portfolio — ask me about his experience, skills, certs, projects, or how to reach him.",
+        "Hi there! Ask me anything about Tridev's DevSecOps and cloud background — experience, skills, certifications, resume, contact info, all fair game.",
       ],
     },
     {
       id: 'about',
-      keywords: ['who are you', 'about you', 'tell me about', 'introduce', 'who is tridev', 'what do you do'],
+      keywords: ['who are you', 'about you', 'tell me about', 'introduce', 'who is tridev', 'what do you do', 'summary', 'overview'],
       responses: [
-        'Tridev Guha is a DevOps Engineer with 7+ years across cloud operations, CI/CD automation, and production support — currently at Pace Wisdom Solutions.',
-        "He's a DevOps engineer focused on cloud infra, automation, and DevSecOps, with a background in security engineering too.",
+        'Tridev Guha is a DevSecOps & Cloud Infrastructure Engineer with 8.8+ years of experience — architecting resilient AWS environments, hardened container platforms, and automated CI/CD pipelines. He is currently at Pace Wisdom Solutions.',
       ],
     },
     {
       id: 'experience',
-      keywords: ['experience', 'work history', 'career', 'background', 'years of experience', 'how long', 'how many years'],
+      keywords: ['experience', 'work history', 'career', 'background', 'years', 'how long', 'how many years', 'worked at', 'roles', 'role'],
       responses: [
-        '7+ years total: DevOps Engineer at Pace Wisdom Solutions (Dec 2025–present), and before that Senior Security Engineer at Qualys (Mar 2018–Sept 2025). Full details in the Experience section.',
+        '8.8+ years in total: DevOps Engineer at Pace Wisdom Solutions (Dec 2025–present), DevOps Engineer at Qualys (Mar 2022–Sept 2025), and Senior Security Engineer at Qualys (Mar 2018–Mar 2022). Full details in the Experience section.',
       ],
     },
     {
       id: 'current_role',
-      keywords: ['current role', 'current job', 'where do you work', 'pace wisdom', 'working now', 'current company', 'what are you doing now'],
+      keywords: ['current role', 'current job', 'where do you work', 'pace wisdom', 'working now', 'current company', 'what are you doing now', 'current'],
       responses: [
-        "Currently a DevOps Engineer at Pace Wisdom Solutions — owns delivery across cloud infra, CI/CD pipelines, containerized workloads, and observability tooling.",
+        'Currently a DevOps Engineer at Pace Wisdom Solutions (Dec 2025–present, Mangalore). Recent work: a zero-downtime AWS RDS MySQL upgrade (v8.0 to v8.4.10), EC2/ALB migrations, Secrets Manager hardening, and FinOps automation that cut AWS compute spend by 30–35%.',
       ],
+      links: ['pacewisdom'],
     },
     {
       id: 'previous_role',
-      keywords: ['qualys', 'previous job', 'past experience', 'security engineer', 'before this'],
+      keywords: ['qualys', 'previous job', 'past experience', 'security engineer', 'before this', 'previous role', 'past role'],
       responses: [
-        'Before this, 7+ years at Qualys as a Senior Security Engineer — CI/CD for vulnerability management releases, infra automation, and incident response.',
+        'Before Pace Wisdom: DevOps Engineer at Qualys (Mar 2022–Sept 2025), where he led 80+ large-scale application migrations and standardized GitLab CI/CD and GitHub Actions. Earlier, Senior Security Engineer at Qualys (Mar 2018–Mar 2022), building RPM/DEB release pipelines for vulnerability and patch management.',
       ],
     },
     {
       id: 'skills',
-      keywords: ['skills', 'tech stack', 'technologies', 'what do you know', 'expertise', 'skill set', 'stack'],
+      keywords: ['skills', 'tech stack', 'technologies', 'what do you know', 'expertise', 'skill set', 'stack', 'tools'],
       responses: [
-        'Cloud (AWS), containers & CI/CD (Docker, Kubernetes, GitLab CI/CD, GitHub Actions), IaC & DevSecOps (Terraform, Ansible, SonarQube, Trivy), and observability & AI (Grafana, Bedrock, Claude). See the Skills section for the full breakdown.',
+        'Cloud (AWS EC2, VPC, EKS, RDS, ALB, Route 53, IAM, Lambda, EventBridge), containers & CI/CD (Docker, Kubernetes, GitLab CI/CD, GitHub Actions, Jenkins), IaC & DevSecOps (Terraform, Ansible, Trivy, SonarQube, Gitleaks), and observability & AI (Grafana, Loki/EFK, Prometheus, Bedrock, Claude Code). See the Skills section for the full breakdown.',
       ],
     },
     {
       id: 'cloud',
-      keywords: ['aws', 'cloud', 'ec2', 's3', 'vpc', 'route 53', 'lambda'],
+      keywords: ['aws', 'cloud', 'ec2', 's3', 'vpc', 'route 53', 'lambda', 'rds', 'eks', 'ecs', 'cloudfront', 'eventbridge', 'secrets manager'],
       responses: [
-        'Hands-on with AWS — EC2, VPC, S3, CloudWatch, CloudFront, Route 53, Lambda, EventBridge, SES, SNS, IAM.',
+        'Hands-on with AWS — EC2, VPC, S3, EKS/ECS, RDS, ALB/ELB, Route 53, CloudFront, IAM, Lambda, EventBridge, SSM, and Secrets Manager. Also Nginx, HAProxy, and WireGuard VPN.',
+      ],
+    },
+    {
+      id: 'migrations',
+      keywords: ['migration', 'migrations', 'migrated', 'cutover', 'downtime', 'upgrade'],
+      responses: [
+        'Led 80+ large-scale application migrations at Qualys, including live daytime cutovers and midnight windows, with near-zero downtime and zero data loss. At Pace Wisdom he ran a zero-downtime RDS MySQL upgrade (v8.0 to v8.4.10) via Blue/Green deployments.',
+      ],
+    },
+    {
+      id: 'finops',
+      keywords: ['cost', 'costs', 'spend', 'finops', 'savings', 'optimization', 'rightsizing'],
+      responses: [
+        'FinOps automation: EC2 start-stop schedules via EventBridge and SSM, rightsizing, and Cost Optimization Hub audits — cutting recurring AWS compute spend by 30–35%.',
       ],
     },
     {
       id: 'containers',
-      keywords: ['docker', 'kubernetes', 'k8s', 'container'],
+      keywords: ['docker', 'kubernetes', 'k8s', 'container', 'containers', 'helm', 'nginx', 'reverse proxy'],
       responses: [
-        'Docker and Kubernetes for containerized workloads, with a focus on rollout stability and environment consistency.',
+        'Docker, Docker Compose, and Kubernetes (EKS). He hardens containers with non-root execution (UID 10001), read-only root filesystems, pinned image tags, and resource quotas and health checks.',
       ],
     },
     {
       id: 'cicd',
-      keywords: ['ci/cd', 'cicd', 'pipeline', 'jenkins', 'github actions', 'gitlab'],
+      keywords: ['ci/cd', 'cicd', 'pipeline', 'pipelines', 'jenkins', 'github actions', 'gitlab', 'deploy', 'deployment', 'deployments', 'release', 'releases'],
       responses: [
-        'GitLab CI/CD, GitHub Actions, and Jenkins — pipeline design, hardening, and release automation.',
+        'GitLab CI/CD, GitHub Actions, and Jenkins — multi-stage pipelines with Trivy scanning, SonarQube SAST, Gitleaks secret detection, and gated production approvals. Deployment time dropped from ~40 minutes to under 8.',
       ],
     },
     {
       id: 'iac',
-      keywords: ['terraform', 'ansible', 'infrastructure as code', 'iac'],
+      keywords: ['terraform', 'ansible', 'infrastructure as code', 'iac', 'provisioning', 'configuration management'],
       responses: [
-        'Terraform and Ansible for infrastructure provisioning and configuration management.',
+        'Terraform and Ansible for provisioning and configuration management — spinning up dev, staging, and production AWS environments in minutes instead of days.',
       ],
     },
     {
       id: 'security',
-      keywords: ['security', 'devsecops', 'sonarqube', 'trivy', 'vulnerab', 'firewall', 'ids/ips'],
+      keywords: ['security', 'devsecops', 'sonarqube', 'trivy', 'vulnerab', 'vulnerability', 'firewall', 'ids/ips', 'hardening', 'secrets', 'gitleaks', 'wireshark', 'burp'],
       responses: [
-        'DevSecOps: SonarQube, Trivy, container/secrets scanning, and pipeline hardening — plus a background in security engineering (firewalls, IDS/IPS, vulnerability management at Qualys).',
+        'DevSecOps: Trivy, SonarQube, Gitleaks, and container/secrets scanning in CI/CD, plus least-privilege IAM, Secrets Manager, and Linux host hardening (UFW, Fail2Ban, Lynis). Earlier in his career he was a Senior Security Engineer at Qualys (firewalls, IDS/IPS, Wireshark, Burp Suite, vulnerability management).',
+      ],
+    },
+    {
+      id: 'observability',
+      keywords: ['observability', 'monitoring', 'alerting', 'grafana', 'prometheus', 'loki', 'efk', 'uptime kuma', 'opentelemetry', 'sre', 'incident', 'incidents', 'mttr', 'postmortem', 'rca', 'slo', 'sla'],
+      responses: [
+        'Observability & SRE: Grafana, Prometheus, OpenTelemetry, Loki/EFK, CloudWatch, and Uptime Kuma. Alerting cut MTTD from 20+ minutes to under 3 at 99.9%+ uptime, and centralized logging with RCA runbooks cut MTTR by ~50%.',
       ],
     },
     {
       id: 'ai',
-      keywords: ['genai', 'claude', 'bedrock', 'prompt engineering', 'generative ai', 'llm'],
+      keywords: ['genai', 'generative ai', 'claude', 'bedrock', 'prompt engineering', 'llm', 'mcp', 'agentic', 'livekit', 'guardrails', 'ai'],
       responses: [
-        'AWS GenAI Foundations, Amazon Bedrock, and Claude — prompt engineering and AI workflow automation applied to DevOps delivery.',
+        'AWS Certified AI Practitioner, Claude Certified Architect Foundations, Amazon Bedrock, Claude Code CLI, MCP integrations, and LiveKit voice AI infrastructure — applied to DevOps delivery, with agentic workflows and prompt engineering.',
       ],
     },
     {
       id: 'certifications',
-      keywords: ['certification', 'certified', 'certificate', 'badge', 'certs'],
+      keywords: ['certification', 'certifications', 'certified', 'certificate', 'badge', 'certs', 'rhcsa', 'red hat'],
       responses: [
-        'Two: AWS Certified — Generative AI Foundations, and Claude Certified Architect — Foundation. See the badges in the Skills & Certifications section.',
+        'AWS Certified AI Practitioner (June 2026), Claude Certified Architect Foundations (Applied Foundations, exam pending), and Red Hat Certified System Administrator — RHCSA (Feb 2020).',
       ],
     },
     {
       id: 'education',
-      keywords: ['education', 'degree', 'college', 'university', 'study', 'studied', 'academic'],
+      keywords: ['education', 'degree', 'college', 'university', 'study', 'studied', 'academic', 'caltech', 'btech', 'b.tech', 'cdac', 'postgraduate', 'post-graduate', 'diploma'],
       responses: [
-        "BTech in Computer Science & Engineering (Techno India University), plus a Post Graduate Diploma in IT Infrastructure Systems from CDAC Pune.",
+        'Post-Graduate Program in DevOps from Caltech CTME (Nov 2023); Post-Graduate Diploma in IT Infrastructure, Systems & Security from CDAC ACTS, Pune (2018, Grade A); and B.Tech in Computer Science & Engineering from Techno India University (2017, CGPA 9.01).',
       ],
     },
     {
       id: 'location',
-      keywords: ['location', 'based', 'where are you', 'live', 'city', 'country'],
+      keywords: ['location', 'based', 'where are you', 'live', 'city', 'country', 'mangalore', 'india'],
       responses: [
         'Based in Mangalore, India.',
       ],
     },
     {
       id: 'languages',
-      keywords: ['language', 'speak', 'fluent'],
+      keywords: ['language', 'languages', 'speak', 'fluent', 'hindi', 'bengali'],
       responses: [
         'English (fluent), Hindi, and Bengali.',
       ],
     },
     {
       id: 'projects',
-      keywords: ['project', 'portfolio project', 'built anything', 'side project'],
+      keywords: ['project', 'projects', 'portfolio project', 'built anything', 'side project', 'cve', 'nuclei', 'vmdr', 'scanner', 'scanning', 'bot', 'ssl'],
       responses: [
-        "The Projects section is empty for now — coming soon. This chatbot and the rest of this site are themselves a decent demo of what he builds, though!",
+        'Three projects: a self-hosted CVE Intelligence Platform (hourly NVD ingestion, CVSSv3 filtering, trend dashboards, multi-channel alerts, and LLM-suggested fixes), a Custom Multi-Account VMDR Scanning Engine (Nuclei, OWASP DefectDojo, FastAPI, Next.js), and an Automated SSL & Synthetic Health Bot Suite (Telegram and Teams alerts).',
       ],
+      links: ['cve'],
     },
     {
       id: 'contact',
-      keywords: ['contact', 'email', 'reach', 'get in touch', 'hire', 'linkedin', 'github profile', 'talk to'],
+      keywords: ['contact', 'email', 'reach', 'get in touch', 'hire', 'talk to', 'message', 'phone'],
       responses: [
-        "Best way is the Contact section — email, GitHub, and LinkedIn icons are all there, plus a downloadable contact card.",
+        "Best way is the Contact section — email, GitHub, LinkedIn, and Pace Wisdom icons are all there, plus a downloadable contact card.",
       ],
       action: 'contact',
+      links: ['linkedin', 'github'],
+    },
+    {
+      id: 'linkedin',
+      keywords: ['linkedin'],
+      responses: [
+        'Here is his LinkedIn profile (opens in a new tab).',
+      ],
+      links: ['linkedin'],
+    },
+    {
+      id: 'github',
+      keywords: ['github', 'repo', 'repos', 'code', 'source'],
+      responses: [
+        'Here is his GitHub profile (opens in a new tab).',
+      ],
+      links: ['github'],
+    },
+    {
+      id: 'pacewisdom',
+      keywords: ['pacewisdom', 'pace wisdom.in', 'pace wisdom solutions', 'company website', 'company'],
+      responses: [
+        'Pace Wisdom Solutions is his current employer (DevOps Engineer since Dec 2025). Here is their site (opens in a new tab).',
+      ],
+      links: ['pacewisdom'],
     },
     {
       id: 'resume',
-      keywords: ['resume', 'cv', 'download resume'],
+      keywords: ['resume', 'cv', 'download resume', 'download cv', 'curriculum vitae'],
       responses: [
         "You can grab the resume PDF directly — I'll start the download for you.",
       ],
       action: 'resume',
+      links: ['resume'],
+    },
+    {
+      id: 'coverletter',
+      keywords: ['cover letter', 'coverletter', 'cover-letter', 'cover'],
+      responses: [
+        'The cover letter is a one-page overview of his 8.8+ years in DevSecOps and cloud architecture, with highlights on migrations, deployment speed, and AWS cost savings. Starting the download now.',
+      ],
+      action: 'coverletter',
+      links: ['coverletter'],
     },
     {
       id: 'availability',
-      keywords: ['available', 'open to work', 'hiring', 'freelance', 'looking for a job', 'looking for job'],
+      keywords: ['available', 'availability', 'open to work', 'hiring', 'freelance', 'looking for a job', 'looking for job', 'join', 'notice period', 'relocate', 'remote'],
       responses: [
-        "For opportunities or collaboration, the best move is reaching out directly via the Contact section — email or LinkedIn.",
+        "The resume doesn't say what his availability is. For opportunities or collaboration, the best move is reaching out directly via the Contact section — email or LinkedIn.",
       ],
+      links: ['linkedin'],
     },
     {
       id: 'is_bot',
@@ -538,25 +626,63 @@ scrollTopBtn.addEventListener('click', () => {
     },
   ];
 
+  // Whole-word keyword match, so e.g. "hi" does not fire on "this" or "his".
+  function hasKeyword(norm, kw){
+    const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`).test(norm);
+  }
+
   function matchIntent(text){
     const norm = text.toLowerCase();
     let best = null;
     let bestScore = 0;
     intents.forEach(intent => {
       let score = 0;
-      intent.keywords.forEach(kw => { if (norm.includes(kw)) score += kw.split(' ').length; });
+      intent.keywords.forEach(kw => { if (hasKeyword(norm, kw)) score += kw.split(' ').length; });
       if (score > bestScore) { bestScore = score; best = intent; }
     });
     return bestScore > 0 ? best : null;
   }
 
-  function addMessage(text, who){
+  function addMessage(text, who, linkKeys){
     const div = document.createElement('div');
     div.className = `chat-msg ${who}`;
     div.textContent = text;
+    (linkKeys || []).forEach(key => {
+      const l = LINKS[key];
+      if (!l) return;
+      const url = typeof l.href === 'function' ? l.href() : l.href;
+      if (!url) return;
+      const a = document.createElement('a');
+      a.href = url;
+      a.textContent = l.label;
+      a.style.display = 'block';
+      a.style.marginTop = '6px';
+      a.style.color = 'inherit';
+      a.style.textDecoration = 'underline';
+      if (l.download) {
+        a.download = l.download;
+      }
+      if (l.external) {
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      }
+      div.appendChild(a);
+    });
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
     return div;
+  }
+
+  function triggerDownload(key){
+    const l = LINKS[key];
+    if (!l) return;
+    const a = document.createElement('a');
+    a.href = l.href;
+    a.download = l.download;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   }
 
   function respondTo(text){
@@ -571,17 +697,12 @@ scrollTopBtn.addEventListener('click', () => {
       typing.remove();
       const intent = matchIntent(text);
       if (!intent) {
-        addMessage("Not sure I caught that — try asking about experience, skills, certifications, projects, or how to get in touch.", 'bot');
+        addMessage(`Not sure I caught that. I can answer about: ${FALLBACK_TOPICS}. Try one of those, or use the quick replies below.`, 'bot');
         return;
       }
-      addMessage(pick(intent.responses), 'bot');
-      if (intent.action === 'resume') {
-        const a = document.createElement('a');
-        a.href = 'assets/tridev-guha-resume.pdf';
-        a.download = 'Tridev-Guha-Resume.pdf';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+      addMessage(pick(intent.responses), 'bot', intent.links);
+      if (intent.action === 'resume' || intent.action === 'coverletter') {
+        triggerDownload(intent.action);
       } else if (intent.action === 'contact') {
         setTimeout(() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' }), 300);
       }
