@@ -447,7 +447,7 @@ scrollTopBtn.addEventListener('click', () => {
       id: 'previous_role',
       keywords: ['qualys', 'previous job', 'past experience', 'security engineer', 'before this', 'previous role', 'past role'],
       responses: [
-        'Before Pace Wisdom: DevOps Engineer at Qualys (Mar 2022–Sept 2025), where he led 80+ large-scale application migrations and standardized GitLab CI/CD and GitHub Actions. Earlier, Senior Security Engineer at Qualys (Mar 2018–Mar 2022), building RPM/DEB release pipelines for vulnerability and patch management.',
+        'Before Pace Wisdom: DevOps Engineer at Qualys (Mar 2022–Sept 2025), where he led 30+ large-scale application migrations and standardized GitLab CI/CD and GitHub Actions. Earlier, Senior Security Engineer at Qualys (Mar 2018–Mar 2022), building RPM/DEB release pipelines for vulnerability and patch management.',
       ],
     },
     {
@@ -468,7 +468,7 @@ scrollTopBtn.addEventListener('click', () => {
       id: 'migrations',
       keywords: ['migration', 'migrations', 'migrated', 'cutover', 'downtime', 'upgrade'],
       responses: [
-        'Led 80+ large-scale application migrations at Qualys, including live daytime cutovers and midnight windows, with near-zero downtime and zero data loss. At Pace Wisdom he ran a zero-downtime RDS MySQL upgrade (v8.0 to v8.4.10) via Blue/Green deployments.',
+        'Led 30+ large-scale application migrations at Qualys, including live daytime cutovers and midnight windows, with near-zero downtime and zero data loss. At Pace Wisdom he ran a zero-downtime RDS MySQL upgrade (v8.0 to v8.4.10) via Blue/Green deployments.',
       ],
     },
     {
