@@ -54,6 +54,8 @@ if (emailLink) {
   emailLink.href = `mailto:${emailAddress}`;
   emailLink.title = 'Click to copy email';
   emailLink.addEventListener('click', (e) => {
+    // No clipboard API (older browsers, insecure contexts): let the mailto work.
+    if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') return;
     e.preventDefault();
     navigator.clipboard.writeText(emailAddress)
       .then(() => showToast(`Copied ${emailAddress} to clipboard`))
@@ -203,7 +205,12 @@ scrollTopBtn.addEventListener('click', () => {
   const skipBtn = document.getElementById('bootSkip');
   const log = document.getElementById('bootLog');
 
-  if (sessionStorage.getItem('booted') === '1') {
+  // sessionStorage can throw (privacy modes, disabled storage); the splash
+  // should still work, it just may replay on reload.
+  const storageGet = (k) => { try { return sessionStorage.getItem(k); } catch (e) { return null; } };
+  const storageSet = (k, v) => { try { sessionStorage.setItem(k, v); } catch (e) { /* ignore */ } };
+
+  if (storageGet('booted') === '1') {
     overlay.classList.add('hidden');
     return;
   }
@@ -222,7 +229,7 @@ scrollTopBtn.addEventListener('click', () => {
   ];
 
   function dismiss(){
-    sessionStorage.setItem('booted', '1');
+    storageSet('booted', '1');
     overlay.classList.add('hidden');
     document.body.classList.remove('boot-active');
     setTimeout(() => overlay.remove(), 600);
@@ -361,7 +368,8 @@ scrollTopBtn.addEventListener('click', () => {
     input.value = '';
     if (!raw) return;
     print(`$ ${raw}`, 'term-echo');
-    const handler = commands[raw.toLowerCase()];
+    const key = raw.toLowerCase();
+    const handler = Object.prototype.hasOwnProperty.call(commands, key) ? commands[key] : null;
     if (handler) {
       handler();
     } else {
@@ -592,7 +600,7 @@ scrollTopBtn.addEventListener('click', () => {
     },
     {
       id: 'coverletter',
-      keywords: ['cover letter', 'coverletter', 'cover-letter', 'cover'],
+      keywords: ['cover letter', 'coverletter', 'cover-letter'],
       responses: [
         'The cover letter is a one-page overview of his 8.8+ years in DevSecOps and cloud architecture, with highlights on migrations, deployment speed, and AWS cost savings. Starting the download now.',
       ],
